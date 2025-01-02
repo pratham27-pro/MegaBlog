@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useDeferredValue, useEffect, useState } from 'react';
 import { useDispatch } from "react-redux";
 import './App.css'
 import authService from "./appwrite/auth.js"
-import { login, logout } from './store/authSlice.js';
+import { login, logout } from './store/authslice.js';
+import { Footer, Header } from './components/index.js';
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  console.log(import.meta.env.VITE_APPWRITE_URL);
-
+  
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); 
 
   useEffect(() => {
     authService.getCurrentUser()
@@ -16,17 +17,24 @@ function App() {
                   if (userData) {
                     dispatch(login({userData}))
                   } else {
-
+                    dispatch(logout({userData}));
                   }
                 })
-                .finally()
+                .finally(() => setLoading(false))
   }, []);
 
-  return (
-    <>
-      <h1>A blog app with Appwrite</h1>
-    </>
-  )
+  return !loading ? (
+    <div className='min-h-sc flex flex-wrap content-between bg-gray-400'>
+        <div className='w-full block'>
+          <Header />
+            <main>
+              Todo : {/*<Outlet/>*/}
+            </main>
+          <Footer/>
+        </div>
+    </div>
+  ) : null
+
 }
 
 export default App
